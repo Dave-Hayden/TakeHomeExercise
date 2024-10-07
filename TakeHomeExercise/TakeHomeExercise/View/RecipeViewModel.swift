@@ -7,6 +7,7 @@
 
 import Foundation
 
+@MainActor
 class RecipeViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading = false
@@ -16,21 +17,20 @@ class RecipeViewModel: ObservableObject {
 
     init(recipeService: RecipeServiceProtocol = RecipeService()) {
         self.recipeService = recipeService
-        fetchRecipes()
+        Task {
+            await fetchRecipes()
+        }
     }
 
-    func fetchRecipes() {
+    func fetchRecipes() async {
         isLoading = true
-        recipeService.fetchRecipes { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let recipes):
-                    self?.recipes = recipes
-                case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
-                }
-            }
+        do {
+            let fetchedRecipes = try await recipeService.fetchRecipes()
+            self.recipes = fetchedRecipes
+            self.errorMessage = nil
+        } catch {
+            self.errorMessage = error.localizedDescription
         }
+        isLoading = false
     }
 }

@@ -16,23 +16,9 @@ struct RecipeDetailView: View {
             if let youtubeUrl = recipe.youtubeUrl {
                 WebView(url: youtubeUrl)
                     .frame(height: 300)
-            } else if let imageUrl = recipe.photoUrlLarge {
-                AsyncImage(url: imageUrl) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 300)
-                    } else if phase.error != nil {
-                        Text("Failed to load image")
-                            .foregroundColor(.red)
-                    } else {
-                        ProgressView("Loading Image...")
-                    }
-                }
             } else {
-                // Show error if neither video nor image exists
-                Text("No video or image available")
+                // Show error if neither video
+                Text("No video available")
                     .foregroundColor(.red)
                     .font(.headline)
             }

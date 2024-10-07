@@ -25,7 +25,7 @@ struct RecipeListView: View {
                         }
                     }
                     .refreshable {
-                        viewModel.fetchRecipes()
+                        await viewModel.fetchRecipes()
                     }
                 }
             }
